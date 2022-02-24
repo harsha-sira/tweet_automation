@@ -2,6 +2,7 @@ import tweepy;
 import keys
 from datetime import datetime
 import math
+import json
 
 # def lambda_handler(event, context):
     
@@ -23,7 +24,6 @@ client = tweepy.Client(
 user = client.get_user(username='awesomeharshas')
 userTweets = client.get_users_tweets(user.data.id, exclude=['retweets'],expansions=['author_id'])
 author_id = userTweets.data[0].author_id
-# author_id = '1493982336458784770'
 
 # out = client.create_tweet( in_reply_to_tweet_id="1496816267423977480", text="Wow")
 # out = client.like('1496402648525942789' , user_auth=True)
@@ -37,8 +37,10 @@ create_count = 0
 list_one='1496816500262547458'
 list_two='1496816876734849028'
 
-tweet_list=[]
+with open('tweets.txt', 'r') as f:
+    tweet_string = f.read()
 
+tweet_list= tweet_string.split("---")
 
 live = False
 if(live):
@@ -54,12 +56,13 @@ if(live):
                     client.like(tweet.data['id'], user_auth=True)
                     rt_count += 1
                 # quote tweet
-                client.create_tweet( quote_tweet_id=tweet.data['id'], text="Please restore #476visa expired due to border closure.")
-                create_count += 1
+                if(create_count < len(tweet_list)):
+                    client.create_tweet( quote_tweet_id=tweet.data['id'], text=tweet_list[create_count])
+                    create_count += 1
 
         for i in tweet_list:
-            if(create_count<200):
-                client.create_tweet( text="Please restore #476visa expired due to border closure.")
+            if(create_count<200 and create_count < len(tweet_list)):
+                client.create_tweet( text=tweet_list[create_count])
                 create_count += 1
 
     elif number == 2:
@@ -73,37 +76,36 @@ if(live):
                     client.like(tweet.data['id'], user_auth=True)
                     rt_count += 1
                 # reply tweet
-                client.create_tweet( quote_tweet_id=tweet.data['id'], text="Please restore #476visa expired due to border closure.")
-                create_count += 1
+                if(create_count < len(tweet_list)):
+                    client.create_tweet( quote_tweet_id=tweet.data['id'], text=tweet_list[create_count])
+                    create_count += 1
 
         for i in tweet_list:
-            if(create_count<200):
-                client.create_tweet( in_reply_to_tweet_id=tweet.data['id'], text="Please restore #476visa expired due to border closure.")
+            if(create_count<200 and create_count < len(tweet_list)):
+                client.create_tweet( in_reply_to_tweet_id=tweet.data['id'], text=tweet_list[create_count])
                 create_count += 1
     elif number == 3:
         print("3..")
         for tweet in tweepy.Paginator(client.get_list_tweets, id=list_one, tweet_fields=['author_id','in_reply_to_user_id','public_metrics'],
                  expansions=['author_id','entities.mentions.username'], max_results=60).flatten(limit=search_count):
-            if(create_count<200): 
-                client.create_tweet( in_reply_to_tweet_id=tweet.data['id'], text="Please restore #476visa expired due to border closure.")
+            if(create_count<200 and create_count < len(tweet_list)): 
+                client.create_tweet( in_reply_to_tweet_id=tweet.data['id'], text=tweet_list[create_count])
                 create_count += 1
         
         for i in tweet_list:
-            if(create_count<200):
-                client.create_tweet( in_reply_to_tweet_id=tweet.data['id'], text="Please restore #476visa expired due to border closure.")
+            if(create_count<200 and create_count < len(tweet_list)):
+                client.create_tweet( in_reply_to_tweet_id=tweet.data['id'], text=tweet_list[create_count])
                 create_count += 1
     elif number == 4:
         print("4..")
         for tweet in tweepy.Paginator(client.get_list_tweets, id=list_two, tweet_fields=['author_id','in_reply_to_user_id','public_metrics'],
                  expansions=['author_id','entities.mentions.username'], max_results=60).flatten(limit=search_count):
-            if(create_count<200): 
-                client.create_tweet( in_reply_to_tweet_id=tweet.data['id'], text="Please restore #476visa expired due to border closure.")
+            if(create_count<200 and create_count < len(tweet_list)): 
+                client.create_tweet( in_reply_to_tweet_id=tweet.data['id'], text=tweet_list[create_count])
                 create_count += 1
         
         for i in tweet_list:
-            if(create_count<200):
-                client.create_tweet( in_reply_to_tweet_id=tweet.data['id'], text="Please restore #476visa expired due to border closure.")
+            if(create_count<200 and create_count < len(tweet_list)):
+                client.create_tweet( in_reply_to_tweet_id=tweet.data['id'], text=tweet_list[create_count])
                 create_count += 1
 
-
-print(create_count)
