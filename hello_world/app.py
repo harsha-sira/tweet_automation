@@ -22,27 +22,55 @@ import keys
 auth = tweepy.OAuthHandler(keys.API_KEY, keys.API_SECRET)
 auth.set_access_token(keys.ACCESS_TOKEN, keys.ACCESS_SECRET)
 
-client = tweepy.Client(bearer_token=keys.BEARER_TOKEN, 
-consumer_key=keys.API_KEY, 
-consumer_secret=keys.API_SECRET, 
-access_token=keys.ACCESS_TOKEN, 
-access_token_secret=keys.ACCESS_SECRET,wait_on_rate_limit=False)
+# client = tweepy.Client(bearer_token=keys.BEARER_TOKEN ,wait_on_rate_limit=False)
 
-user = client.get_user(username='harsha_sira')
-print(user.data.name)
+client = tweepy.Client(
+    bearer_token=keys.BEARER_TOKEN, 
+    consumer_key=keys.API_KEY, 
+    consumer_secret=keys.API_SECRET, 
+    access_token=keys.ACCESS_TOKEN, 
+    access_token_secret=keys.ACCESS_SECRET)
 
-results = client.search_recent_tweets("#476visa" , expansions= "author_id,attachments.media_keys,entities.mentions.username" , max_results=100)
+user = client.get_user(username='awesomeharshas')
+userTweets = client.get_users_tweets(user.data.id, exclude=['retweets'],expansions=['author_id'])
+author_id = userTweets.data[0].author_id
+
+# out = client.create_tweet(text="Please restore #476visa expired due to border closure. \n@ScottMorrisonMP @AlexHawkeMP")
+out = client.retweet('1496402648525942789' , user_auth=True)
+print(out)
+
 # 180
 count = 0
-for tweet in tweepy.Paginator(client.search_recent_tweets, query="#476visa -is:retweet", expansions= "author_id,attachments.media_keys,entities.mentions.username", max_results=10).flatten(limit=20):
+# for tweet in tweepy.Paginator(client.search_recent_tweets, query="#476visa -is:retweet", max_results=10).flatten(limit=20):
+# for tweet in tweepy.Paginator(client.search_recent_tweets, query="#476visa -is:retweet", tweet_fields=['author_id','in_reply_to_user_id','public_metrics'],
+#                                      user_fields='profile_image_url', expansions=['author_id','entities.mentions.username'], max_results=10).flatten(limit=20):
+#  '576309961'
+# 1493982336458784770
     # this if for testing only
-    if(count ==0):
-        print(tweet)
-        # check rt is not by me and number of RT count
+    # if(count ==7):
+        # print(tweet.in_reply_to_user_id)
+        # print(tweet.author_id)
+        # print(tweet.public_metrics['retweet_count'])
+        # print(tweet)
+    # total_rt = tweet.public_metrics['retweet_count'] + tweet.public_metrics['quote_count']
+    # if(total_rt >= 10 and tweet.author_id != author_id ):
+    #     print('found')
+    #     print(tweet.data['id'])
+        # RT
+        # try:
+#         client1 = tweepy.Client(bearer_token=keys.BEARER_TOKEN, 
+# consumer_key=keys.API_KEY, 
+# consumer_secret=keys.API_SECRET, 
+# access_token=keys.ACCESS_TOKEN, 
+# access_token_secret=keys.ACCESS_SECRET,wait_on_rate_limit=True)
+       
+        # except:
+        #     print('error----->>')            
+
         
 
     
-    count +=1
+    # count +=1
 
 print(count)
 # tweepy.Paginator()
