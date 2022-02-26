@@ -1,4 +1,4 @@
-import tweepy;
+import tweepy
 import keys
 from datetime import datetime, timedelta
 import math
@@ -16,12 +16,12 @@ def lambda_handler(event, context):
 
     client = getClient()
 
-    user = client.get_user(username=settings.USERNAME)
-    userTweets = client.get_users_tweets(user.data.id, exclude=['retweets'],expansions=['author_id'])
-    author_id = userTweets.data[0].author_id
+    out = client.get_tweet(settings.OWN_TWEET_ID, tweet_fields=['author_id'],expansions=['author_id'] )
+    author_id = out.data.author_id
 
-    number = math.ceil(datetime.now().minute / 15)
-    # number = 1
+
+    # number = math.ceil(datetime.now().minute / 15)
+    number = 5
 
     now = datetime.utcnow()
     old1 = now - timedelta(hours=1)
@@ -68,21 +68,22 @@ def hashtag476Changes(client, author_id, rt_count,create_count,tweet_list,old,se
                     client.like(tweet.data['id'], user_auth=True)
                     rt_count += 1
                 except Exception as e:
-                    print("Error RT tweet, tweet id -> " +tweet.data['id'] + e.__cause__ )    
+                    print("Error RT tweet, tweet id -> " +tweet.data['id'] + str(e) )    
             # quote tweet
             if(create_count < len(tweet_list)):
+                print(tweet.author_id)
                 try:
                     client.create_tweet( quote_tweet_id=tweet.data['id'], text=tweet_list[create_count])
                     create_count += 1
                 except Exception as e:
-                    print("Error quoting tweet, tweet id -> " + tweet.data['id'] + e.__cause__)
+                    print("Error quoting tweet, tweet id -> " + tweet.data['id'] + str(e))
     for i in tweet_list:
         if(create_count<25 and create_count < len(tweet_list)):
             try:
                 client.create_tweet( text=tweet_list[create_count])
                 create_count += 1
             except Exception as e:
-                print("Error creating tweet" + e.__cause__ )    
+                print("Error creating tweet" + str(e) )    
 
 def hashtagAuspollChanges(client,author_id,rt_count,create_count,tweet_list, old, search_count):
     for tweet in tweepy.Paginator(client.search_recent_tweets, start_time=old, query="#auspoll OR #auspol OR #nswpol OR #auspoll2022 -is:retweet -#476visa", tweet_fields=['author_id','in_reply_to_user_id','public_metrics'],
@@ -95,21 +96,21 @@ def hashtagAuspollChanges(client,author_id,rt_count,create_count,tweet_list, old
                     client.like(tweet.data['id'], user_auth=True)
                     rt_count += 1
                 except Exception as e:
-                    print("Error liking tweet, tweet id -> " +tweet.data['id'] + e.__cause__)    
+                    print("Error liking tweet, tweet id -> " +tweet.data['id'] + str(e))    
             # reply tweet
             if(create_count < len(tweet_list)):
                 try:
                     client.create_tweet( in_reply_to_tweet_id=tweet.data['id'], text=tweet_list[create_count])
                     create_count += 1
                 except Exception as e: 
-                    print("Error replying tweet, tweet id -> " +tweet.data['id'] + e.__cause__)
+                    print("Error replying tweet, tweet id -> " +tweet.data['id'] + str(e))
     for i in tweet_list:
         if(create_count<25 and create_count < len(tweet_list)):
             try:
                 client.create_tweet( text=tweet_list[create_count])
                 create_count += 1
             except Exception as e:
-                print("Error creating tweet" + e.__cause__)    
+                print("Error creating tweet" + str(e))    
 
 def listChanges(client,list_name,create_count,tweet_list,old, search_count ):
     for tweet in tweepy.Paginator(client.get_list_tweets, id=list_name, tweet_fields=['author_id','in_reply_to_user_id','public_metrics'],
@@ -119,7 +120,7 @@ def listChanges(client,list_name,create_count,tweet_list,old, search_count ):
                 client.create_tweet( in_reply_to_tweet_id=tweet.data['id'], text=tweet_list[create_count])
                 create_count += 1
             except Exception as e:
-                print("Error replying tweet, tweet id -> " +tweet.data['id'] + e.__cause__ )  
+                print("Error replying tweet, tweet id -> " +tweet.data['id'] + str(e) )  
     print("Count->>>"+ create_count)
 
-# lambda_handler(None,None)
+lambda_handler(None,None)
